@@ -56,19 +56,19 @@ class IsModuleException(Exception):
 
 
 class AnsibleObject(object):
-    
+
     __metaclass__ = ABCMeta
-    
+
     def __init__(self, local_store, uid, *args, **kwargs):
         self.local_store = local_store
         self.uid = uid
-        
+
     def get_name(self):
         return self.uid
-    
+
     def get_dependencies(self):
         return []
-    
+
     def get_path(self):
         return self.local_store
 
@@ -77,27 +77,27 @@ class AnsibleObject(object):
 class Role(AnsibleObject):
     '''
     Container object for an Ansible Role which holds meta information about the role
-    '''    
-    
+    '''
+
     def __init__(self, local_store, *args, **kwargs):
         '''
         Constructor
-        
+
         Arugments:
             * **local_store** :  Location of where this role is stored locally after being fetched
-            * **kwargs** : A dictionary of any meta information about this role (following Ansible Galaxy's meta format)        
-        '''            
+            * **kwargs** : A dictionary of any meta information about this role (following Ansible Galaxy's meta format)
+        '''
         self.local_store = local_store
         for k,v in kwargs.iteritems():
             setattr(self, k, v)
-            
+
         meta_path = os.path.join(self.local_store, 'meta/main.yml')
         if os.path.exists(meta_path):
             meta_info = load(open(meta_path, 'r'), Loader=Loader)
             for k,v in meta_info.iteritems():
                 setattr(self, k, v)
-                   
-            
+
+
     def get_name(self):
         '''
         Returns the named identifier of this role: <owner>.<repo name>
@@ -107,20 +107,20 @@ class Role(AnsibleObject):
         if hasattr(self, 'github_user') and hasattr(self, 'github_repo'):
             return "%s.%s" % (getattr(self, 'github_user'), getattr(self, 'github_repo'))
         raise RoleException('Role does not have unique name')
-        
+
     def get_path(self):
         '''
         Returns the location of where this role is stored locally
         '''
         return self.local_store
-    
+
     def get_dependencies(self):
         '''
         Based on the meta information provided in ``meta/main.yml'', returns the list of other
         roles that this Role depends on. Warns (but doesn't fail) if a role doesn't define this information.
         '''
         needs = []
-        
+
         # check if this Role has a ``dependencies`` property, warn if it doesn't
         if not hasattr(self, 'dependencies'):
             print("Warning : role's dependencies are not specified `%s`" % self.get_name())
@@ -139,8 +139,8 @@ class Role(AnsibleObject):
                     dependency['src'] += "#alias=%s" % (dependency['role'])
 
                 needs.append(dependency['src'])
-                
-                
+
+
             elif type(dependency) == dict and 'role' in dependency:
                 needs.append(dependency['role'])
             else:
@@ -150,7 +150,7 @@ class Role(AnsibleObject):
 
 class Module(AnsibleObject):
     pass
-    
+
 class Playbook(AnsibleObject):
     pass
-        
+

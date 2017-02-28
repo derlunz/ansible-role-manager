@@ -6,11 +6,13 @@ from __future__ import print_function
 import colorama
 
 def query_options(menu_items, question='Please select', default=None):
+    """ ask user interactivly answer a question """
 
     numbers = range(1,len(menu_items)+1)
     selectors = ['%s' % n for n in numbers]
 
     def _unique_selector(name):
+        """ create menu text, hotkey tuple """
         for letter in name.lower():
             if letter not in selectors:
                 selectors.append(letter)
@@ -29,6 +31,7 @@ def query_options(menu_items, question='Please select', default=None):
         raise Exception("could not find unique selector")
     
     def _display_options():
+        """ show the menu """
         for i in numbers:
             key,new_name = _unique_selector(menu_items[i-1]['name'])
             menu_items[i-1]['key'] = key
@@ -50,16 +53,16 @@ def query_options(menu_items, question='Please select', default=None):
             choice = raw_input("%s [%s] " % (question, ids[default]['name']))
         else:
             choice = raw_input("%s >> " % (question))
-    
+
         choice = choice.strip().lower()
 
         if not choice and default:
             return ids[default]
-        
+
         if not choice:
             print("please make a selection")
             _selection()
-    
+
         for test in tests:
             if choice in test:
                 print(test[choice]['description'])
@@ -70,10 +73,9 @@ def query_options(menu_items, question='Please select', default=None):
 
     return _selection()
 
-
 def query_yes_no(question, default=''):
     """Ask a yes/no question via raw_input() and return their answer.
-    
+
     "question" is a string that is presented to the user.
     "default" is the presumed answer if the user just hits <Enter>.
         It must be "yes" (the default), "no" or None (meaning
@@ -84,24 +86,23 @@ def query_yes_no(question, default=''):
     valid = {"yes":"yes",   "y":"yes",  "ye":"yes",
              "no":"no",     "n":"no"}
 
-
     exact = False
     if default == None:
         exact = True
-    
+
     if exact:
-        prompt = ("yes","no")
+        prompt = ("yes", "no")
         valid = {"yes":"yes", "no":"no"}
     elif not default:
-        prompt = ('y','n')
+        prompt = ('y', 'n')
     elif default == "y":
-        prompt = ('Y','n')
+        prompt = ('Y', 'n')
     elif default == "n":
-        prompt = ('y','N')
+        prompt = ('y', 'N')
     elif default == "yes":
-        prompt = ('Yes','no')
+        prompt = ('Yes', 'no')
     elif default == "no":
-        prompt = ('yes','No')
+        prompt = ('yes', 'No')
     else:
         raise ValueError("invalid default answer: '%s'" % default)
 
@@ -118,7 +119,8 @@ def query_yes_no(question, default=''):
             print("Please respond with '%s' or '%s'" % (prompt[0].lower(), prompt[1].lower()))
 
 def query_true_false(question, default=''):
-    if default == True:
+    """ interactively ask user to answer yes/now question """
+    if default is True:
         default = 'y'
     elif default == False:
         default = 'n'

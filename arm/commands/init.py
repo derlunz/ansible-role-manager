@@ -14,26 +14,29 @@ from arm.conf import settings
 
 class init(Command):
 
-    help = "initialize directory structure & files"    
+    help = "initialize directory structure & files"
 
     def __init__(self, parser):
-        group = parser.add_mutually_exclusive_group(required=True)	
-        group.add_argument('-p','--playbook', help="create the recommended structure for a playbook")
-        group.add_argument('-r','--role', help="within a playbook, create directory & file structure for role")
-        group.add_argument('-m','--module', help="within a playbook, create the structure for a custom module")
-        
-        parser.add_argument('-e','--editable', action='store_true', help="create new role or module in library as dependency" )
-    
-    def run(self, argv):
+        grp = parser.add_mutually_exclusive_group(required=True)
+        grp.add_argument('-p', '--playbook',
+                         help="create the recommended structure for a playbook")
+        grp.add_argument('-r', '--role',
+                         help="within a playbook, create directory & file structure for role")
+        grp.add_argument('-m', '--module',
+                         help="within a playbook, create the structure for a custom module")
 
-        patterns = os.path.join(os.path.dirname(__file__),'init')
+        parser.add_argument('-e', '--editable', action='store_true',
+                            help="create new role or module in library as dependency" )
+
+    def run(self, argv):
+        patterns = os.path.join(os.path.dirname(__file__), 'init')
         current = os.getcwd()
-        
+
         if argv.playbook and argv.editable:
             raise CommandException("combination of flags '-e' and '-p' not allowed.")
-        
-        def _default(item): return item if item else ''
-        
+
+        _default = lambda item: item if item else ''
+
         root = _default(get_playbook_root(current))
 
         playbook = _default(argv.playbook)
@@ -45,7 +48,7 @@ class init(Command):
             os.path.join(patterns, 'role'), os.path.join(patterns, 'role'),
             os.path.join(patterns, 'module'), os.path.join(patterns, 'module'),
         )
-        
+
         destinations = (
             os.path.join(current, playbook),
             None,
@@ -71,6 +74,7 @@ class init(Command):
         env = Environment(loader=FileSystemLoader(_source))
 
         def _install_template(_path):
+            """ installs a templat to `path` """
             os.makedirs(os.path.join(_destination, _path))
 
             files = os.listdir(os.path.join(_source,_path))
@@ -99,7 +103,6 @@ class init(Command):
             'module',
             'module'
         )
-
 
         if os.path.exists(_destination) or \
            (links[index] and os.path.exists(links[index])):

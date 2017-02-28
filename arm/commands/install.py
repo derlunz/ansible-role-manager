@@ -9,17 +9,16 @@ from arm.odict import odict
 from arm.util import retrieve_role, retrieve_all_roles, get_playbook_root
 from arm import Role, Module
 
-
 class install(Command):
-        
-    help = "install playbook role" 
-    
+
+    help = "install playbook role"
+
     def __init__(self, parser):
         parser.description = self.help
         parser.add_argument('-U','--upgrade', action='store_true')
         parser.add_argument('-n', '--no-deps', action='store_true', help="install without this item's dependencies")
-        
-        group = parser.add_mutually_exclusive_group(required=True)               
+
+        group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('-r',  '--requirements', nargs=1, help="install from requirements file (see `arm help freeze`)")
         group.add_argument('role_or_module', nargs='?', help="specifier of role or module to install locally")
 

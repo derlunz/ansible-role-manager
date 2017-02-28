@@ -1,4 +1,8 @@
-import os, shutil, re
+"""
+ansible-role-manager - routes
+"""
+from __future__ import print_function
+
 from abc import ABCMeta, abstractmethod, abstractproperty
 from arm.util import find_subclasses, get_playbook_root
 from arm import Role, Module
@@ -19,7 +23,8 @@ ROUTE_REGEX =  {
 
 class RouteException(Exception):
     '''
-    Thrown by any arm.Route which encounters an issue during identifier validation or fetching.
+    RoutException is thrown by any arm.Route which encounters an issue
+    during identifier validation or fetching.
     '''
     pass
 
@@ -28,46 +33,49 @@ class RouteException(Exception):
 
 class Route(object):
     '''
-    Abstract class which is used to implement the fetching of a role to local playbook.
-    
-    '''    
+    Abstract class which is used to implement the fetching of a role to local
+    playbook.
+    '''
     __metaclass__ = ABCMeta
-    
+
     def __init__(self):
         pass
-    
+
     @abstractmethod
     def _uid(self):
+        """ unique object id """
         return None
-        
+
     @abstractmethod
     def __unicode__(self):
+        """ return object as unicode string """
         return None
 
     @abstractmethod
     def is_valid(self, identifier):
         '''
-        Required. Use provided identifier to determine if this route can fetch the necessary role.
-    
+        Required. Use provided identifier to determine if this route can fetch
+        the necessary role.
+
         Arugments:
             * **identifier** :  See :doc:specifiers
-    
+
         Returns: bool
-        
+
         '''
         return False
-    
+
     @abstractmethod
     def fetch(self, identifier):
         '''
         Required. Use provided identifer to fetch the role from this route.
-        
+
         Arguments:
             * **identifiers** : See :doc:specifiers
-            
-        Returns: arm.Role with location of fetched role and meta information from ``meta/main.yml``
-        
-        '''   
+
+        Returns: arm.Role, with location of fetched role and
+                           meta information from ``meta/main.yml``
+        '''
         return None
 
 # ----------------------------------------------------------------------
@@ -98,21 +106,21 @@ class VCSRoute(Route):
 
         playbook_tests = ('roles', '.arm', 'group_vars', 'host_vars',)
         role_tests = ('tasks', 'meta', 'files', 'handlers')
-        
+
         def _test_fetched(tests):
             return len([True for test in tests if os.path.exists(os.path.join(_destination, test))]) > 0
-        
+
         is_playbook = _test_fetched(playbook_tests)
         is_role = _test_fetched(role_tests)
-        
+
         if is_role:
             return Role(_destination, uid=_uid)
         elif is_playbook:
             return Playbook(_destination, uid=_uid)
         else:
             return Module(_destination, uid=_uid)
-        
-        
+
+
         #if is_role and type(pod) != Role:
             #print("Warning: potential install of module or playbook as role")
         #if is_playbook and type(pod) != Playbook:
@@ -126,9 +134,9 @@ class VCSRoute(Route):
 
 '''
    Find all the routes within this directory and import each.
-   
+
    Assumes all commands are subclasses of ``arm.routes.Route`` and are called ``BaseCommand``
-   
+
    TODO: allow arbitrary name as long as it inherits from ``arm.routes.Route``
    def find_subclasses(module, clazz):
        for name in dir(module):
@@ -138,7 +146,7 @@ class VCSRoute(Route):
                    yield name, o
            except TypeError: pass
 '''
-    
+
 routes_dir = os.path.dirname(__file__)
 routes = []
 
@@ -148,9 +156,9 @@ for module in os.listdir(routes_dir):
         continue
     # import route module
     route_mod = __import__('arm.routes.%s' % module[:-3], locals(), globals(),['object'],-1)
-    
+
     # search for all subclasses of ``arm.routes.Route``
     for route_name,route_class in find_subclasses(route_mod, Route):
         # instantiate and append to ``routes`` list
         routes.append(route_class())
-        
+

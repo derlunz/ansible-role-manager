@@ -13,19 +13,19 @@ from arm.prompt import query_true_false
 
 
 class uninstall(Command):
-        
-    help = "remove a role from the library of dependencies"    
-    
+
+    help = "remove a role from the library of dependencies"
+
     def __init__(self, parser):
         parser.description = self.help
         parser.add_argument('role', help='name of role to remove')
         parser.add_argument('-u','--unlink',action='store_true', help="remove link but leave in library")
-        
+
     def run(self, argv):
-        
+
         _root = get_playbook_root(os.getcwd())
         _role = os.path.join(_root, 'roles', argv.role)
-        
+
         if not os.path.exists(_role):
             print("error :: the role `%s` does not exist in the playbook's library" % _role)
             return 1
@@ -35,9 +35,9 @@ class uninstall(Command):
             return 1
 
         _library = os.path.join(os.path.realpath(_role))
-        
+
         repo = Repo(_library)
-        
+
         # check to see if the role in the library has non-committed changes
         if repo.git.status(porcelain=True).strip() != '':
             print("error :: the role `%s` has non-commited changes" % _role)
