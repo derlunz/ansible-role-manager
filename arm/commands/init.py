@@ -63,10 +63,10 @@ class init(Command):
             None, os.path.join(root, settings.paths.ansible_roles_dir, role),
             None, os.path.join(root, settings.paths.ansible_modules_dir, module)
         )
-        
-        def _eval(item,value): return bool(item) * value
-                
-        index = (_eval(playbook, 0) | _eval(role,2) | _eval(module,4)) + _eval(argv.editable,1)
+
+        _eval = lambda item, value: bool(item) * value
+        index = (_eval(playbook, 0) | _eval(role, 2) | \
+                 _eval(module, 4)) + _eval(argv.editable, 1)
 
         _source = sources[index]
         _destination = destinations[index]
@@ -77,23 +77,23 @@ class init(Command):
             """ installs a templat to `path` """
             os.makedirs(os.path.join(_destination, _path))
 
-            files = os.listdir(os.path.join(_source,_path))
+            files = os.listdir(os.path.join(_source, _path))
             for f in files:
-                _s = os.path.join(_source,_path,f)
-                _d = os.path.join(_destination, _path, f)                    
-                
-                if os.path.isdir(_s):
+                src = os.path.join(_source,_path, f)
+                dst = os.path.join(_destination, _path, f)
+
+                if os.path.isdir(src):
                     # recurse through any subdirectory
-                    _install_template(os.path.join(_path,f))
+                    _install_template(os.path.join(_path, f))
                 elif '.armj2' in f:
                     # render template to _destination + _path +f
-                    template = env.get_template(os.path.join(_path,f))
-                    _d = _d.replace('.armj2','')
-                    with open(_d, 'wb') as fh:
-                        fh.write(template.render(name=_d))
+                    template = env.get_template(os.path.join(_path, f))
+                    dst = dst.replace('.armj2', '')
+                    with open(dst, 'wb') as dest_file:
+                        dest_file.write(template.render(name=dest_file))
                 else:
                     # copy to _destination + _path + f
-                    shutil.copy(_s,_d)
+                    shutil.copy(src, dst)
 
         _name = (
             'playbook',
@@ -106,7 +106,7 @@ class init(Command):
 
         if os.path.exists(_destination) or \
            (links[index] and os.path.exists(links[index])):
-            raise CommandException("%s '%s' already exists." % (_name[index],os.path.basename(_destination)))
+            raise CommandException("%s '%s' already exists." % (_name[index], os.path.basename(_destination)))
         _install_template('')
         if links[index]:
             os.symlink(
@@ -115,10 +115,4 @@ class init(Command):
 
         print("ansible %s created successfully" % (_name[index]))
         return 0
-
-            
-
-
-
-
 

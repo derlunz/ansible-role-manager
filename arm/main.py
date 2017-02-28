@@ -13,7 +13,7 @@ def main():
     os.environ['COLUMNS'] = '100'
 
     # create command line argument parser and a sub-parser for the subcommands
-    parser = argparse.ArgumentParser(prog=sys.argv[0])    
+    parser = argparse.ArgumentParser(prog=sys.argv[0])
     subparsers = parser.add_subparsers()
 
     # find the subdirectory where all the ``arm `` commands are stored

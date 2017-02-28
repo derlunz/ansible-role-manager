@@ -3,6 +3,9 @@
 """
 from __future__ import print_function
 
+import os
+import shutil
+import re
 from . import Command, CommandException
 from arm.conf import settings
 from arm.odict import odict
@@ -30,100 +33,95 @@ class install(Command):
         root = get_playbook_root(os.getcwd())
 
         if not root:
-            print '''
-            can't find playbook. 
+            print('''
+            can't find playbook.
             use `arm init` to create recommended structure.
-            or use the `--no-dependencies` option.'''
+            or use the `--no-dependencies` option.''')
             return 1
-        
+
         roles = odict()
-        
+
         if getattr(argv, 'requirements', ''):
-            for role_ident in open(argv.requirements[0],'r'):
+            for role_ident in open(argv.requirements[0], 'r'):
                 ret = self._fetch(role_ident, argv.no_deps, roles)
                 if ret is not None:
                     roles = ret
         else:
-            roles = self._fetch(argv.role_or_module, argv.no_deps, roles )
-                    
-        for alias,role in roles.items():
+            roles = self._fetch(argv.role_or_module, argv.no_deps, roles)
+
+        for alias, role in roles.items():
             self._install_and_link(alias, role, getattr(argv, 'upgrade', False))
 
         print("\nrole(s) '%s' installed succesfully.\n" % (", ".join(roles.keys())))
         exit(0)
-            
-    
+
+
     def _fetch(self, role_ident, no_deps, roles):
 
         if role_ident.startswith('#'):
             return None
-        
-        aliasRE = re.compile(r'^(?P<ident>.+?)(\#alias\=(?P<alias>[a-zA-Z][a-zA-Z0-9-_.]+?)){0,1}$')
-        
-        alias_match = aliasRE.match(role_ident)
-        
+
+        alias_re = re.compile(r'^(?P<ident>.+?)(\#alias\=(?P<alias>[a-zA-Z][a-zA-Z0-9-_.]+?)){0,1}$')
+        alias_match = alias_re.match(role_ident)
+
         if not alias_match:
             print("error : could not find format")
             return 1
-        
+
         role_ident = alias_match.groupdict()['ident']
-        alias = alias_match.groupdict().get('alias',None)
-                
+        alias = alias_match.groupdict().get('alias', None)
+
         if no_deps:
-            
             role = retrieve_role(role_ident)
 
             if alias:
-                roles.update( { alias:role } )
+                roles.update({alias:role})
                 return roles
-            
-            roles.update( { role.get_name():role } )
+
+            roles.update({role.get_name():role})
             return roles
 
         return retrieve_all_roles(role_ident, alias, roles)
 
-        
+
     def _install_and_link(self, alias, rmp, upgrade=False):
-        
+
         root = get_playbook_root(os.getcwd())
         source_path = rmp.get_path()
         library_path = None
         link_path = None
-        if type(rmp) == Role:
+        if isinstance(rmp, Role):
             installed_rmp_dir = settings.installed_roles_dir
             ansible_rmp_dir = settings.ansible_roles_dir
 
-        elif type(rmp) == Module:
-            
+        elif isinstance(rmp, Module):
+
             installed_rmp_dir = settings.installed_modules_dir
             ansible_rmp_dir = settings.ansible_modules_dir
-            
+
         installed_rmp_path = os.path.join(installed_rmp_dir, rmp.get_name())
         library_path = os.path.join(root, installed_rmp_path)
         link_path = os.path.join(root, ansible_rmp_dir, alias)
-            
+
         # TODO : test if a 'local' route makes sense for a role dependency
         # if the library path is also the role, local role dependency
         #if os.path.realpath(link_path) == os.path.realpath(library_path):
             #return
-        
+
         if os.path.exists(library_path) and not upgrade:
             raise CommandException("'%s' already installed in library, use --upgrade to install latest" % rmp.get_name())
 
         if os.path.exists(link_path):
-
             if not os.path.islink(link_path):
-                if type(rmp) == Role:
+                if isinstance(rmp, Role):
                     raise Exception("role '%s' already exists as a non-installed role" % rmp)
-                elif type(rmp) == Module:
+                elif isinstance(rmp, Module):
                     raise Exception("module '%s' aleady exists as a non-installed module" % rmp)
 
             if not upgrade:
                 raise CommandException("'%s' already installed in library, use --upgrade to install latest" % rmp.get_name())
 
-        
         if upgrade:
-
             if os.path.exists(library_path):
                 print("\t upgrading :: removing old version")
                 shutil.rmtree(library_path)
@@ -132,21 +130,13 @@ class install(Command):
                 os.unlink(link_path)
 
         shutil.copytree(source_path, library_path)
-        ansible_rmp_path = os.path.join(root,ansible_rmp_dir)
+        ansible_rmp_path = os.path.join(root, ansible_rmp_dir)
 
         if not os.path.exists(ansible_rmp_path):
             os.mkdir(ansible_rmp_path)
-            
+
         os.symlink(
             os.path.relpath(installed_rmp_path, ansible_rmp_dir),
             os.path.join(link_path)
             )
 
-            
-        
-
-        
-        
-
-        
-        

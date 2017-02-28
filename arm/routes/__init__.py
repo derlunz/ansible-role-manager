@@ -3,21 +3,25 @@ ansible-role-manager - routes
 """
 from __future__ import print_function
 
+import os
+import shutil
+import re
 from abc import ABCMeta, abstractmethod, abstractproperty
-from arm.util import find_subclasses, get_playbook_root
-from arm import Role, Module
 from pip.exceptions import InstallationError
+
+from arm import Role, Module
+from arm.util import find_subclasses, get_playbook_root
 
 # TODO : these should be case-insensitive (or search/match should ignore case)
 
-ROUTE_REGEX =  {
-    'user':'(?P<user>[a-z][a-z\d\-]+?)',
-    'fqdn':'(?P<fqdn>([a-z][a-z\.\d\-]+)\.(?:[a-z][a-z\-]+)(?![\w\.]))',
-    'owner':'(?P<owner>[a-z][a-z\.\-]+)',
-    'repo':'(?P<repo>[a-z][\w\-_]+)',
-    'tag': '(\@(?P<tag>[a-z]+)){0,1}',
-    'path':'(\/(?P<path>[\w.-_]+))*'
-}   
+ROUTE_REGEX = {
+    'user':r'(?P<user>[a-z][a-z\d\-]+?)',
+    'fqdn':r'(?P<fqdn>([a-z][a-z\.\d\-]+)\.(?:[a-z][a-z\-]+)(?![\w\.]))',
+    'owner':r'(?P<owner>[a-z][a-z\.\-]+)',
+    'repo':r'(?P<repo>[a-z][\w\-_]+)',
+    'tag': r'(\@(?P<tag>[a-z]+)){0,1}',
+    'path':r'(\/(?P<path>[\w.-_]+))*'
+}
 
 # ----------------------------------------------------------------------
 
@@ -101,7 +105,7 @@ class VCSRoute(Route):
             shutil.rmtree(_destination)
         try:
             _repo.obtain(_destination)
-        except InstallationError as e:
+        except InstallationError:
             raise RouteException("could not retrieve '%s' " % identifier)
 
         playbook_tests = ('roles', '.arm', 'group_vars', 'host_vars',)

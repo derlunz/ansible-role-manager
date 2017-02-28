@@ -8,7 +8,7 @@ import colorama
 def query_options(menu_items, question='Please select', default=None):
     """ ask user interactivly answer a question """
 
-    numbers = range(1,len(menu_items)+1)
+    numbers = range(1, len(menu_items)+1)
     selectors = ['%s' % n for n in numbers]
 
     def _unique_selector(name):
@@ -22,33 +22,32 @@ def query_options(menu_items, question='Please select', default=None):
                     'message': letter.upper(),
                     'reset': colorama.Style.RESET_ALL
                 }
-                
-                c = '%(style)s%(message)s%(reset)s' % coloring
-                new_name = name.lower().replace(letter,c,1)
-                
+
+                col = '%(style)s%(message)s%(reset)s' % coloring
+                new_name = name.lower().replace(letter, col, 1)
+
                 return letter, new_name
-            
+
         raise Exception("could not find unique selector")
-    
+
     def _display_options():
         """ show the menu """
         for i in numbers:
-            key,new_name = _unique_selector(menu_items[i-1]['name'])
+            key, new_name = _unique_selector(menu_items[i-1]['name'])
             menu_items[i-1]['key'] = key
             menu_items[i-1]['number'] = '%s' % (i)
             description = menu_items[i-1].get('description', '')
             print("(%s)\t" % i + new_name + "\t%s" % description)
     _display_options()
 
-    ids = dict([ (item['id'], item) for item in menu_items ])
-    keys = dict([ (item['key'], item) for item in menu_items ])
-    numbers = dict([ (item['number'], item) for item in menu_items ])
-    names = dict([ (item['name'].lower(), item) for item in menu_items ])
-        
-    tests = (keys,numbers,names)
-        
-        
-    def _selection():           
+    ids = dict([(item['id'], item) for item in menu_items])
+    keys = dict([(item['key'], item) for item in menu_items])
+    numbers = dict([(item['number'], item) for item in menu_items])
+    names = dict([(item['name'].lower(), item) for item in menu_items])
+    tests = (keys, numbers, names)
+
+    def _selection():
+        """ read user input """
         if default:
             choice = raw_input("%s [%s] " % (question, ids[default]['name']))
         else:
@@ -87,7 +86,7 @@ def query_yes_no(question, default=''):
              "no":"no",     "n":"no"}
 
     exact = False
-    if default == None:
+    if default is None:
         exact = True
 
     if exact:
@@ -122,10 +121,10 @@ def query_true_false(question, default=''):
     """ interactively ask user to answer yes/now question """
     if default is True:
         default = 'y'
-    elif default == False:
+    elif default is False:
         default = 'n'
-        
-    if query_yes_no(question,default) == 'yes':
+
+    if query_yes_no(question, default) == 'yes':
         return True
     return False
 

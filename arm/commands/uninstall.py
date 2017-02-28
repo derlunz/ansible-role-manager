@@ -51,8 +51,8 @@ class uninstall(Command):
         if not checkEqual([ref.commit for ref in repo.refs ]):
             print("error :: the role `%s` has commits different from the origin")
             return 1
-        
-        for root, dir, files in os.walk(_library):
+
+        for root, _, files in os.walk(_library):
             if '.git' in root:
                 continue
             for f in files:

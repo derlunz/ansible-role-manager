@@ -4,13 +4,14 @@ ansible-role-manager setup
 """
 from __future__ import print_function
 
-import os, re, sys
+import os
+import re
+import sys
 from distutils.version import LooseVersion
 from distutils.core import setup
 from setuptools import find_packages
 
-
-VERSIONFILE="arm/_version.py"
+VERSIONFILE = "arm/_version.py"
 verstrline = open(VERSIONFILE, "rt").read()
 VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
 mo = re.search(VSRE, verstrline, re.M)
@@ -29,9 +30,7 @@ dependencies = [
     'hgapi',
 ]
 
-links = [
-
-]
+links = []
 
 # pycrypto is a dependency of ansible & git-python and has issues compiling on OSX with XCode 5.1 and above.
 # display warning. need to set this before running setup for ansible-role-manager
@@ -43,7 +42,7 @@ if 'install' in sys.argv:
         out, err = p.communicate()
         ver_re = re.compile('(?P<version>\d(.\d){0,2})')
         ver_match = ver_re.search(out)
-        if not os.environ.get('ARCHFLAGS',False) \
+        if not os.environ.get('ARCHFLAGS', False) \
            and ver_match \
            and LooseVersion('5.1') <= LooseVersion(ver_match.groupdict()['version']):
 
@@ -55,8 +54,8 @@ if 'install' in sys.argv:
         # we're probably not running on OSX
         pass
 
-with open('README.rst') as file:
-    long_description = file.read()
+with open('README.rst') as infile:
+    long_description = infile.read()
 
 setup(name='ansible-role-manager',
       version=verstr,
@@ -68,9 +67,7 @@ setup(name='ansible-role-manager',
       packages=find_packages(),
       include_package_data=True,
       install_requires=dependencies,
-      dependency_links = links,
+      dependency_links=links,
       long_description=long_description
      )
-
-
 

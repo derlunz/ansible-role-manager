@@ -41,10 +41,9 @@ class help(Command):
 
                 # instantiate the command and provide its ``run`` method as the callback
                 command = command_class(command_parser)
-                command_parser.set_defaults(func=command.run)                
-            
-        if getattr(argv, 'command',None):
+                command_parser.set_defaults(func=command.run)
+
+        if getattr(argv, 'command', None):
             args = parser.parse_args([argv.command, '-h'])
         args = parser.parse_args(['-h'])
-        
-        
+
