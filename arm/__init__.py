@@ -123,7 +123,7 @@ class Role(AnsibleObject):
         
         # check if this Role has a ``dependencies`` property, warn if it doesn't
         if not hasattr(self, 'dependencies'):
-            print "Warning : role's dependencies are not specified `%s`" % self.get_name()
+            print("Warning : role's dependencies are not specified `%s`" % self.get_name())
 
         # check to make sure that each dependency is formatted corrected - ie. a string
         for dependency in getattr(self, 'dependencies',[]):
@@ -134,8 +134,8 @@ class Role(AnsibleObject):
                 alias_m = alias_re.search(dependency['src'])
                 if alias_m:
                     if alias_m.groupdict()['alias'] != dependency['role']:
-                        print "Warning : '%s' has a dependency where alias doesn't match role: %s vs. %s" % (self.get_name(), dependency['role'], alias_m.groupdict()['alias'])
-                else:                    
+                        print("Warning : '%s' has a dependency where alias doesn't match role: %s vs. %s" % (self.get_name(), dependency['role'], alias_m.groupdict()['alias']))
+                else:
                     dependency['src'] += "#alias=%s" % (dependency['role'])
 
                 needs.append(dependency['src'])
@@ -144,7 +144,7 @@ class Role(AnsibleObject):
             elif type(dependency) == dict and 'role' in dependency:
                 needs.append(dependency['role'])
             else:
-                print "Warning : '%s' has improperly defined dependencies." % self.get_name()
+                print("Warning : '%s' has improperly defined dependencies." % self.get_name())
         return needs
 
 

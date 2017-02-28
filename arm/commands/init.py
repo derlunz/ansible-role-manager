@@ -1,3 +1,10 @@
+"""
+ansible-role-manager: init command
+
+initializes a new role directory structure
+"""
+from __future__ import print_function
+
 import os
 import shutil
 from jinja2 import Environment, FileSystemLoader
@@ -102,8 +109,8 @@ class init(Command):
             os.symlink(
                 os.path.relpath(_destination, os.path.dirname(links[index])),
                 links[index])
-                
-        print "ansible %s created successfully" % (_name[index])
+
+        print("ansible %s created successfully" % (_name[index]))
         return 0
 
             

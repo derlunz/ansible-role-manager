@@ -3,7 +3,7 @@ from basecommand import Command
 
 def main():
     
-    print "main"
+    print("main")
     import os
 
     commands = []
@@ -16,14 +16,14 @@ def main():
         commands.append(module[:-3])
         
     if len(sys.argv) < 2 or sys.argv[1] == 'help':
-        print "Usage: arm <command> [options]"
-        print ""
-        print "Commands:"
+        print("Usage: arm <command> [options]")
+        print("")
+        print("Commands:")
         for command in commands:
-            print command
+            print(command)
             module = __import__('commands.%s' % command, locals(), globals())
             module.
-            #print "\t%s\t%" % (command, BaseCommand.help)
+            #print("\t%s\t%" % (command, BaseCommand.help))
         return 0        
 
     if argv[1] in commands:

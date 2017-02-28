@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""
+ansible-role-manager setup
+"""
+from __future__ import print_function
 
 import os, re, sys
 from distutils.version import LooseVersion
@@ -42,12 +46,12 @@ if 'install' in sys.argv:
         if not os.environ.get('ARCHFLAGS',False) \
            and ver_match \
            and LooseVersion('5.1') <= LooseVersion(ver_match.groupdict()['version']):
-            
-            print "Warning :"
-            print "\t`pycrypto` on OSX with XCode 5.1 and above will not compile without ARCHFLAGS being set."
-            print "\tsee http://mirskytech.github.io/ansible-role-manager/installation.html"
-    
-    except OSError as e:
+
+            print("Warning :")
+            print("\t`pycrypto` on OSX with XCode 5.1 and above will not compile without ARCHFLAGS being set.")
+            print("\tsee http://mirskytech.github.io/ansible-role-manager/installation.html")
+
+    except OSError:
         # we're probably not running on OSX
         pass
 

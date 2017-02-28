@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os, shutil, sys
 from . import Command
 from arm.util import get_playbook_root, find_subclasses

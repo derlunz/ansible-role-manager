@@ -48,11 +48,11 @@ def main():
         args.func(args)
 
     # display errors from routes or commands
-    except RouteException as e:
-        print "\nError (fetch) :: %s\n" % e
+    except RouteException as exc:
+        print("\nError (fetch) :: %s\n" % exc)
         exit(1)
-    except CommandException as e:
-        print "\nError (command) :: %s\n" % e
+    except CommandException as exc:
+        print("\nError (command) :: %s\n" % exc)
         exit(1)
     
     # successful

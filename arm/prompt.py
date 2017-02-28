@@ -1,7 +1,9 @@
+"""
+interactive prompt functions
+"""
+from __future__ import print_function
+
 import colorama
-
-
-
 
 def query_options(menu_items, question='Please select', default=None):
 
@@ -31,8 +33,8 @@ def query_options(menu_items, question='Please select', default=None):
             key,new_name = _unique_selector(menu_items[i-1]['name'])
             menu_items[i-1]['key'] = key
             menu_items[i-1]['number'] = '%s' % (i)
-            description = menu_items[i-1].get('description','')
-            print "(%s)\t" % i + new_name + "\t%s" % description
+            description = menu_items[i-1].get('description', '')
+            print("(%s)\t" % i + new_name + "\t%s" % description)
     _display_options()
 
     ids = dict([ (item['id'], item) for item in menu_items ])
@@ -55,15 +57,15 @@ def query_options(menu_items, question='Please select', default=None):
             return ids[default]
         
         if not choice:
-            print "please make a selection"
+            print("please make a selection")
             _selection()
     
         for test in tests:
             if choice in test:
-                print test[choice]['description']
+                print(test[choice]['description'])
                 return test[choice]
 
-        print "selection not valid"
+        print("selection not valid")
         return _selection()
 
     return _selection()
@@ -103,8 +105,8 @@ def query_yes_no(question, default=''):
     else:
         raise ValueError("invalid default answer: '%s'" % default)
 
-    while 1:
-        print question + " [%s/%s] " % (prompt[0],prompt[1])
+    while True:
+        print(question + " [%s/%s] " % (prompt[0], prompt[1]))
         choice = raw_input().lower()
         if exact and choice in valid:
             return choice
@@ -113,9 +115,8 @@ def query_yes_no(question, default=''):
         elif not exact and choice in valid.keys():
             return valid[choice]
         else:
-            print "Please respond with '%s' or '%s'" % (prompt[0].lower(), prompt[1].lower())
-            
-            
+            print("Please respond with '%s' or '%s'" % (prompt[0].lower(), prompt[1].lower()))
+
 def query_true_false(question, default=''):
     if default == True:
         default = 'y'

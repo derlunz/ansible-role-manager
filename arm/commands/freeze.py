@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os, shutil, sys, textwrap
 from . import Command
 from arm.util import get_playbook_root
@@ -39,23 +41,18 @@ class freeze(Command):
                 origin = repo.remotes[0].config_reader.config.get('remote "origin"','url')
                 commit = repo.head.commit.hexsha
                 if not alias:
-                    print "git+%s@%s" % (origin,commit)
+                    print("git+%s@%s" % (origin,commit))
                     continue
-                print "git+%s@%s#alias=%s" % (origin,commit,alias)
-            
+                print("git+%s@%s#alias=%s" % (origin,commit,alias))
+
             # if mercurial
             if os.path.exists(os.path.join(os.path.realpath(_item),'.hg')):
                 repo = hg_repo(os.path.realpath(_item))
-                
-                print repo
-                
-                if not alias:
-                    print "hg+%s@%s" % (origin,commit)
-                    continue
-                print "hg+%s@%s#alias=%s" % (origin,commit,alias)
-                
-                
-        
 
-        
-        
+                print(repo)
+
+                if not alias:
+                    print("hg+%s@%s" % (origin,commit))
+                    continue
+                print("hg+%s@%s#alias=%s" % (origin,commit,alias))
+

@@ -1,3 +1,8 @@
+"""
+ansible-role-manager: update command
+
+"""
+from __future__ import print_function
 from . import Command
 
 
@@ -14,4 +19,4 @@ class update(object):
         return 'update'
         
     def run(self, argv):
-        print "running %s" % argv
+        print("running %s" % argv)

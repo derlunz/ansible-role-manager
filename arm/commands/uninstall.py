@@ -1,8 +1,14 @@
-import os, shutil, sys, re, argparse, shutil
-from . import Command
-from arm.util import get_playbook_root
+"""
+    ansible-role-manager: uninstall command
+"""
+from __future__ import print_function
+
+import os
+import shutil
 from git import Repo
 
+from . import Command
+from arm.util import get_playbook_root
 from arm.prompt import query_true_false
 
 
@@ -21,11 +27,11 @@ class uninstall(Command):
         _role = os.path.join(_root, 'roles', argv.role)
         
         if not os.path.exists(_role):
-            print "error :: the role `%s` does not exist in the playbook's library" % _role
+            print("error :: the role `%s` does not exist in the playbook's library" % _role)
             return 1
 
         if not os.path.islink(_role):
-            print "error :: the role `%s` was not installed using ARM. refusing to delete." % _role
+            print("error :: the role `%s` was not installed using ARM. refusing to delete." % _role)
             return 1
 
         _library = os.path.join(os.path.realpath(_role))
@@ -34,35 +40,27 @@ class uninstall(Command):
         
         # check to see if the role in the library has non-committed changes
         if repo.git.status(porcelain=True).strip() != '':
-            print "error :: the role `%s` has non-commited changes" % _role
+            print("error :: the role `%s` has non-commited changes" % _role)
             return 1
 
         # check to see if the library role has non-pushed changes
         # http://stackoverflow.com/questions/3844801
         def checkEqual(lst):
             return not lst or lst.count(lst[0]) == len(lst)
-        
-        if not checkEqual([ ref.commit for ref in repo.refs ] ):
-            print "error :: the role `%s` has commits different from the origin"
+
+        if not checkEqual([ref.commit for ref in repo.refs ]):
+            print("error :: the role `%s` has commits different from the origin")
             return 1
         
         for root, dir, files in os.walk(_library):
             if '.git' in root:
                 continue
             for f in files:
-                print "%s/%s" % (root, f)
-                
+                print("%s/%s" % (root, f))
+
         if query_true_false('Are you sure you want to remove `%s`?' % argv.role, default=True):
             os.unlink(_role)
             shutil.rmtree(_library)
         else:
-            print "exiting"
-                
+            print("exiting")
 
-        
-
-                
-        
-
-        
-        

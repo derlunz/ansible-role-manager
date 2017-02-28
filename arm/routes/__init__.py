@@ -114,11 +114,11 @@ class VCSRoute(Route):
         
         
         #if is_role and type(pod) != Role:
-            #print "Warning: potential install of module or playbook as role"
+            #print("Warning: potential install of module or playbook as role")
         #if is_playbook and type(pod) != Playbook:
-            #print "Warning: potential install of module or role as playbook"
+            #print("Warning: potential install of module or role as playbook")
         #if not is_playbook and not is_role and type(pod) != Module:
-            #print "Warning: potential install of role or playbook as module"
+            #print("Warning: potential install of role or playbook as module")
 
         return pod(_destination, uid=_uid)
 

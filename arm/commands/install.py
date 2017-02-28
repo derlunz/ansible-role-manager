@@ -1,4 +1,8 @@
-import os, shutil, re
+"""
+    ansible-role-manager: install command
+"""
+from __future__ import print_function
+
 from . import Command, CommandException
 from arm.conf import settings
 from arm.odict import odict
@@ -45,8 +49,8 @@ class install(Command):
                     
         for alias,role in roles.items():
             self._install_and_link(alias, role, getattr(argv, 'upgrade', False))
-                   
-        print "\nrole(s) '%s' installed succesfully.\n" % (", ".join(roles.keys()))
+
+        print("\nrole(s) '%s' installed succesfully.\n" % (", ".join(roles.keys())))
         exit(0)
             
     
@@ -60,7 +64,7 @@ class install(Command):
         alias_match = aliasRE.match(role_ident)
         
         if not alias_match:
-            print "error : could not find format"
+            print("error : could not find format")
             return 1
         
         role_ident = alias_match.groupdict()['ident']
@@ -122,10 +126,10 @@ class install(Command):
         if upgrade:
 
             if os.path.exists(library_path):
-                print "\t upgrading :: removing old version"
+                print("\t upgrading :: removing old version")
                 shutil.rmtree(library_path)
             if os.path.islink(link_path):
-                print "\t upgrading :: unlinking old version"
+                print("\t upgrading :: unlinking old version")
                 os.unlink(link_path)
 
         shutil.copytree(source_path, library_path)
